@@ -1,112 +1,52 @@
-# AWS Streaming Media Analytics
+# QoS Solution based on the AWS Streaming Media Analytics
 
-AWS Streaming Media Analytics is a serverless end-to-end solution for analyzing the video streaming experience
+The aim of this solution is to provide the core for any streaming video platform that wants to improve their QoS system. 
 
-- [AWS Streaming Media Analytics](#AWS-Streaming-Media-Analytics)
-  - [How to launch the CloudFormation template](#How-to-launch-the-CloudFormation-template)
-  - [Reinvent Workshop](#Reinvent-Workshop)
-  - [Solution Architecture](#Solution-Architecture)
-  - [How to customize and create your own CloudFormation template.](#How-to-customize-and-create-your-own-CloudFormation-template)
-  - [JavaScript Video Player Setup](#JavaScript-Video-Player-Setup)
+- [QoS Solution]
+  - [Solution Architecture](#Architecture-Overview)
+  - [Databricks QoS Notebooks](#QoS-Noebooks)
+  - [How to deploy the platform](#How-to-deploy-the-platform)
   - [License Summary](#License-Summary)
 
+## Architecture Overview
 
-A workshop walking through the setup process is located here. [Workshop - Reinvent 2018](workshop/WORKSHOP.md)
+The Architecture includes standard AWS components for the video streaming side of an OTT platform and Databricks as a Unified Data Analytics Platform for both the real time insights and the advanced analytics (machine learning) capabilities.
 
-![alt text](images/main.png "AWS Streaming Media Analytics")
+![alt text](images/arch.png "Architecture Overview")
 
+##QoS Notebooks
 
-## How to launch the CloudFormation template
+The [Notebooks](notebooks/QOSNOTEBOOKS.md) provided are showcasing an end-to-end project using [Delta](https://delta.io/) and a Delta Architecture pattern :
+- the data ingestion including a `make your data available to everyone pipeline` with real-time data enrichment and anonymisation    
+- real-time notifications based on a complex rules engine or machine learning based scoring 
+- real-time aggregations to update the web application
+- quick shareable Dashboard built directly on top of the datasets stored in your Delta Lake
 
-Prior to deploying the OTT streaming platform, first ensure you are logged in to your AWS account for use in this workshop. To sign in to the AWS Management Console, open https://aws.amazon.com and click on the My Account->AWS Management Console link in the top right corner of the page.
+## How to deploy the platform
 
-This CloudFormation template deploys an example OTT streaming platform in to your AWS account. The deployed environment includes a static website hosted on S3 with sample videos, Kinesis Data Firehose endpoints to accept and process streaming log data and a real-time log analysis application built on Kinesis Analytics, DynamoDB and AppSync.
+As a minimum level of requirements in order to deploy the platform you must have access to an AWS account with a Databricks workspace and Docker installed on your local environment to build the code.
 
-If you want to make changes to the code change the S3Bucket field in the mapping section of the CloudFormation document to your own bucket. Make sure to put the lambda code in the region you want to deploy. 
+Deployment:
 
-1. First download the deployment.yaml under the cloudformation folder of this repo. Open up the CloudFormation console in your aws account and choose upload a template file. 
+1. Clone the project and configure the Makefile and the CloudFormation template
+    - set `bucket` variable to reflect the S3 bucket name prefix which will be created within a deployment region
+    - set `regions` variable to reflect one or more AWS regions you want the code artifacts to be copied for CloudFormation deployment.
+    - set `stack_name` for the Stack Name to use in the deployment.
+    - set `profile` to the AWS CLI profile which has necessary permissions to deploy and create all the resources required. 
+              
+2. Build and upload the code in the source bucket in S3: `make all`. Once the build is completed,you can use the URL for your CloudFormation script in the next step. 
+      
+3. [Deploy the CloudFormation](deployment/CLOUDFORMATION.md) script either using the make deploy command or using the UI. 
+      
+4. Configure the [IAM passthrough for Databricks Cluster](https://docs.databricks.com/security/credential-passthrough/iam-passthrough.html#launch-cluster)
+      
+5. Import the Databricks archive with [QoS Notebooks](notebooks/QOSNOTEBOOKS.md) in your environment. 
+      
+6. You are ready to go! Enjoy the QoS Solution!  
 
-2. The CloudFormation Management Console will load with the template URL pre-filled as a Amazon S3 URL. Click the orange Next button located in the bottom right corner of the console to configure the deployment.
-
-3. By default we have set a stack name of mediaqos. There is no need to change this and we refer to this name throughout the guide when identifying resources. If you do decide to change the stack name, please ensure you only use lower-case letters and digits, and keep the name under 12 characters. The stack name is used to name resources throughout the workshop. Keep the name handy as you will need it from time to time to locate resources deployed by the stack.
-
-4. Once you have decided on a stack name, click Next to continue.
-
-5. On the next step, Configure stack options, leave all values as they are and click Next to continue.
-
-6. On the Review step
-
-a. Check the three boxes under Capabilities and transforms to acknowledge the template will create IAM resources and leverage transforms.
-
-b. Click the Create stack button located at the bottom of the page to deploy the template.
-
-The stack should take around 5-10 minutes to deploy.
-
-## Quicksight Update Frequency
-
-By default the Glue Trigger is set for every 4 hours to reduce cost. This can frequency can be increased, but check the AWS Glue console pricing for more details. In my testing AWS Glue cost 0.44 cents per run in this solution. 
-
-The GlueJob that writes player data to S3 for Athena and Quick sight is located within the WatchTimeGlueTrigger. Look for the field that looks like this. 
-```Schedule: cron(0 */4 * * ? *)```
-
-
-## Reinvent Workshop
-
-Here is the workshop that was presented at Reinvent 2018. 
-
-[Workshop - Reinvent 2018](workshop/WORKSHOP.md)
-
-This Reinvent Workshop goes into depth showing how to make the QuickSight monitoring graphs. Follow this workshop after you have deployed the CloudFormation template. 
-
-## Architecture 
-
-
-![alt text](workshop/images/arch1.png "Architecture - ingest pipeline")
-
-![alt text](workshop/images/arch2.png "Architecture")
-
-![alt text](workshop/images/arch3.png "Architecture")
-
-
-
-
-## How to customize and create your own CloudFormation template.
-
-Setup Instructions
-To build with Docker && make
-
-Pre-requisite:
-- Install `docker` for your environment as we will use a Docker container to build
-- Install AWS CLI
-- Install yarn
-
-In Makefile:
-  - set `bucket` variable to reflect the S3 bucket name prefix which will be created within a deployment region
-  - set `regions` variable to reflect one or more AWS regions you want the code artifacts to be copied for CloudFormation deployment.
-  - set `stack_name` for the Stack Name to use in the deployment.
-  - set `profile` to the AWS CLI profile which has necessary permissions to deploy and create all the resources required.
-
-Commands to manage creation/deletion of S3 buckets:
-- To create buckets across regions: `make creates3`
-- To delete buckets across regions: `make deletes3`
-
-Commands to build and deploy the entire project
-- `make all`
-- `make deploy`
-
-Once the deployment is done you should see the player URL in the Outputs section of the CloudFormation template.
-
-## Pricing
-
-Reference the AWS Pricing pages for each service used. 
-
-
-## JavaScript Video Player Setup
-
-[Guide to Setup JavaScript Video Player](PLAYERSETUP.md)
-
-
+Any changes to the code of the solution will require to run the same process ( build, upload code, deploy the new app ).
 
 ## License Summary
 
 This sample code is made available under the MIT-0 license. See the LICENSE file.
+

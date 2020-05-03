@@ -1,19 +1,26 @@
 .PHONY: all build package copycodeww copytemplateww syncvideos creates3 deletes3 deploy
 
 # set bucket name prefix to be created
-# bucket = mediaqos-rodeo
-bucket = aws-streaming-media-analytics-workshop
-video_assets_bucket = aws-streaming-media-analytics-sourcecontent-us-east-1
-# can set multiple AWS regions separated by space
-regions = ap-southeast-1 ap-southeast-2 ap-northeast-1 ap-northeast-2 ap-south-1 ca-central-1 eu-west-1 eu-west-2 eu-west-3 eu-north-1 sa-east-1 us-east-1 us-east-2 us-west-2
-version = oss-v1
+bucket = qos-media-code
+
+# can set multiple AWS regions separated by space to copy the code
+regions = us-west-2
+version = oss-databricks-v1
+
 # set to AWS CLI profile name to use
 # profile = rodeo
-profile = mediaqos-rodeo
+profile = default
+
+# stack deployment
+deployment_region = us-west-2
+deployment_file = deployment.yaml
+# requied if sync of videos is done usin the make file
+video_assets_bucket = aws-streaming-media-analytics-sourcecontent-us-east-1
+email_address  = 'required if deployment is done using the cmd'
 # set Stack Name
 stack_name = mediaqos
 
-all: image build package copycodeww copytemplateww syncvideos
+all: image build package creates3 copycodeww copytemplateww
 
 image:
 	docker build --tag amazonlinux:qos .
@@ -69,6 +76,7 @@ syncvideos:
 		aws s3 cp assets/sample-videos/video-manifest.txt s3://$(bucket)-$$region/qos/sample-videos/ --acl public-read --profile $(profile);\
 	done
 
+
 copycodeww:
 	@for region in $(regions) ; do \
 	  echo $$region; echo $(bucket);\
@@ -81,24 +89,20 @@ copycodeww:
 		aws s3 cp dist/activeuser-appsync-function.zip s3://$(bucket)-$$region/qos/lambda-functions/activeuser-appsync-function/$(version)/ --acl public-read --profile $(profile); \
 		aws s3 cp dist/add-partition-function.zip s3://$(bucket)-$$region/qos/lambda-functions/add-partition-function/$(version)/ --acl public-read --profile $(profile); \
 		aws s3 cp cloudformation/appsync_schema.graphql s3://$(bucket)-$$region/qos/lambda-functions/recentvideoview-appsync-function/$(version)/ --acl public-read --profile $(profile); \
-		aws s3 cp cloudformation/etl/player_log_job s3://$(bucket)-$$region/qos/etl/$(version)/ --acl public-read --profile $(profile); \
 		done
 
 copytemplateww:
 		@for region in $(regions);do \
 		echo $$region;	echo $(bucket); \
-		sed -e "s/BUCKET_NAME/${bucket}/g" -e "s/VERSION/${version}/g" cloudformation/deployment_template.yaml > cloudformation/deployment.yaml; \
-		aws s3 cp cloudformation/deployment.yaml s3://$(bucket)-$$region/qos/cloudformation/$(version)/ --acl public-read --profile $(profile); \
+		aws s3 cp cloudformation/$(deployment_file) s3://$(bucket)-$$region/qos/cloudformation/$(version)/ --acl public-read --profile $(profile); \
+		echo https://$(bucket)-$$region.s3.amazonaws.com/qos/cloudformation/$(version)/$(deployment_file); \
 		done
 
 template:
 		sed -e "s/BUCKET_NAME/${bucket}/g" -e "s/VERSION/${version}/g" cloudformation/deployment_template.yaml > cloudformation/deployment.yaml
 
 deploy:
-	aws cloudformation deploy --template-file cloudformation/deployment.yaml --stack-name $(stack_name)  --capabilities=CAPABILITY_NAMED_IAM --profile $(profile) --region us-west-2
-
-deploy1:
-	aws cloudformation deploy --template-file cloudformation/deployment_gluejob_only.yaml --stack-name testqos2  --capabilities=CAPABILITY_NAMED_IAM --profile $(profile) --region  us-west-2
+	aws cloudformation deploy --template-file cloudformation/$(deployment_file) --stack-name $(stack_name) --parameter-overrides Email=$(email_address) --capabilities=CAPABILITY_NAMED_IAM --profile $(profile) --region ${deployment_region}
 
 clean:
 	rm -r dist/*

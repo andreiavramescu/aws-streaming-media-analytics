@@ -19,7 +19,7 @@ The code can be found under the web directory of the repo.
 
 ## Demo Player
 
-The demo player shown below can be used to test this solution. The demo player is deployed via the CloudFormation interface and gives a demo that includes the HLS player as well as the metrics getting sent into the interface. The workshop shows how to use this demo player. 
+The demo player shown below can be used to test this solution. The demo player is deployed via the CloudFormation interface and gives a demo that includes the HLS player as well as the metrics getting sent into the interface. 
 
 ![alt text](images/demoplayer.png "Demo Player Preview Image")
 

@@ -12,9 +12,6 @@ const URL = require('url');
 const AWS = require('aws-sdk');
 
 const GRAPHQL_ENDPOINT = process.env.GRAPHQL_ENDPOINT;
-// const API_KEY = process.env.API_KEY;
-// "https://arpgjwxeknclllq7akimhnr2cm.appsync-api.us-west-2.amazonaws.com/graphql";
-// const apiKey = "da2-fplx5k76ijchjbqdy5jhyeomsm";
 
 console.log('Loading function');
 exports.handler = (event, context, callback) => {
@@ -22,12 +19,12 @@ exports.handler = (event, context, callback) => {
     let failure = 0;
     console.log("Event :%j", event);
 
-    const output = event.records.map((record) => {
-        /* Data is base64 encoded, so decode here */
+    const output = event.Records.map((record) => {
+
         console.log("record :%j", record);
-        const recordData = Buffer.from(record.data, 'base64');
-        const jsonData = JSON.parse(recordData);
-        console.log("data :%j", jsonData);
+        const jsonData = JSON.parse(record.Sns.Message);
+        console.log("json data :%j", jsonData);
+
 
         let mutationData = { id: "recent", count: jsonData.USER_COUNT };
 
@@ -80,10 +77,10 @@ exports.handler = (event, context, callback) => {
                 });
         });
 
-            return {
-             recordId: record.recordId,
-             result: 'Ok',
-            };
+        return {
+            recordId: record.recordId,
+            result: 'Ok',
+        };
     });
 
     callback(null, {

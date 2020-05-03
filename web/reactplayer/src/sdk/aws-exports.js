@@ -3,14 +3,14 @@ const awsmobile =  {
     "authenticationType": "AWS_IAM",
     "apiKey": "QOS_API_KEY",
     "cloudfront_domain": 'CLOUDFRONT_DOMAIN',
-    "firehose": {
-        DeliveryStreamName: "QOS_DELIVERY_STREAM"
-    },
     "aws": {
         region: "QOS_DEPLOY_REGION"
     },
     "cognito": {
         IdentityPoolId: 'QOS_IDENTITY_POOL_ID'
+    },
+    "kinesis": {
+        StreamName: 'QOS_DELIVERY_STREAM'
     }
 };
 
