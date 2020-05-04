@@ -52,7 +52,3 @@ Commands to build and deploy the entire project
 - `make deploy`
 
 Once the deployment is done you should see the player URL in the Outputs section of the CloudFormation template.
-
-## JavaScript Video Player Setup
-
-[Guide to Setup JavaScript Video Player](PLAYERSETUP.md)

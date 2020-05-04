@@ -1,26 +1,26 @@
-# QoS Solution based on the AWS Streaming Media Analytics
-
 The aim of this solution is to provide the core for any streaming video platform that wants to improve their QoS system. 
 
-- [QoS Solution]
+- QoS Solution
   - [Solution Architecture](#Architecture-Overview)
-  - [Databricks QoS Notebooks](#QoS-Noebooks)
+  - [Databricks QoS Notebooks](#QoS-Notebooks)
   - [How to deploy the platform](#How-to-deploy-the-platform)
   - [License Summary](#License-Summary)
-
+  
 ## Architecture Overview
 
 The Architecture includes standard AWS components for the video streaming side of an OTT platform and Databricks as a Unified Data Analytics Platform for both the real time insights and the advanced analytics (machine learning) capabilities.
 
 ![alt text](images/arch.png "Architecture Overview")
 
-##QoS Notebooks
+## QoS Notebooks
 
-The [Notebooks](notebooks/QOSNOTEBOOKS.md) provided are showcasing an end-to-end project using [Delta](https://delta.io/) and a Delta Architecture pattern :
+[The Notebooks provided](https://andreiavramescu.github.io/testrepo/notebooks/html/index.html) are showcasing an end-to-end project using [Delta](https://delta.io/) and a Delta Architecture pattern :
 - the data ingestion including a `make your data available to everyone pipeline` with real-time data enrichment and anonymisation    
 - real-time notifications based on a complex rules engine or machine learning based scoring 
 - real-time aggregations to update the web application
-- quick shareable Dashboard built directly on top of the datasets stored in your Delta Lake
+- quick shareable Dashboard built directly on top of the datasets stored in your Delta Lake (for e.g. the [Network Operations Center Dashboard](https://andreiavramescu.github.io/testrepo/notebooks/html/Network%20Operations%20Dashboard.html))
+
+For an easy import in Databricks an archive (.dbc) with all the Notebooks is provided in the Notebooks folder.  
 
 ## How to deploy the platform
 
@@ -36,15 +36,21 @@ Deployment:
               
 2. Build and upload the code in the source bucket in S3: `make all`. Once the build is completed,you can use the URL for your CloudFormation script in the next step. 
       
-3. [Deploy the CloudFormation](deployment/CLOUDFORMATION.md) script either using the make deploy command or using the UI. 
+3. [Deploy the CloudFormation](cloudformation/CLOUDFORMATION.md) script either using the `make deploy` command or the CloudFormation UI. At the end of deployment you can find all the resources created during the deployment in the Resource tab.  
+   
+  ![How to search for a resource](images/cloudformation-resources.png)
+  
+4. As best practice, you should launch Databricks clusters with instance profiles that allow you to access your data from Databricks clusters without having to embed your AWS keys in notebooks. 
+   
+   [Use the IAM role created and follow the steps 4,5,6 in the guideline to secure access using instance profiles:](https://docs.databricks.com/administration-guide/cloud-configurations/aws/instance-profiles.html) 
+    - Update the Databricks cross-account role with the new created IAM role that you can found the resource list mentioned above (the IAM role name includes Databricks)
+    - Add the instance profile to the Databricks workspace
+    - Start the cluster using the instance profile attached      
       
-4. Configure the [IAM passthrough for Databricks Cluster](https://docs.databricks.com/security/credential-passthrough/iam-passthrough.html#launch-cluster)
-      
-5. Import the Databricks archive with [QoS Notebooks](notebooks/QOSNOTEBOOKS.md) in your environment. 
+5. Import the Databricks archive - [QoS Notebooks](notebooks/QoS.dbc) - in your environment and update the config notebook with resources created by the CloudFormation deployment.
       
 6. You are ready to go! Enjoy the QoS Solution!  
 
-Any changes to the code of the solution will require to run the same process ( build, upload code, deploy the new app ).
 
 ## License Summary
 
