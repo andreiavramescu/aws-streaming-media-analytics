@@ -14,11 +14,11 @@ The Architecture includes standard AWS components for the video streaming side o
 
 ## QoS Notebooks
 
-[The provided Notebooks](https://andreiavramescu.github.io/testrepo/notebooks/html/index.html) are showcasing an end-to-end project using [Delta](https://delta.io/) and a Delta Architecture pattern :
+[The provided Notebooks](https://andreiavramescu.github.io/aws-streaming-media-analytics/notebooks/html/index.html) are showcasing an end-to-end project using [Delta](https://delta.io/) and a Delta Architecture pattern :
 - the data ingestion including a `make your data available to everyone pipeline` with real-time data enrichment and anonymisation    
 - real-time notifications based on a complex rules engine or machine learning based scoring 
 - real-time aggregations to update the web application
-- quick shareable Dashboard built directly on top of the datasets stored in your Delta Lake (for e.g. the [Network Operations Center Dashboard](https://andreiavramescu.github.io/testrepo/notebooks/html/Network%20Operations%20Dashboard.html))
+- quick shareable Dashboard built directly on top of the datasets stored in your Delta Lake (for e.g. the [Network Operations Center Dashboard](https://andreiavramescu.github.io/aws-streaming-media-analytics/notebooks/html/Network%20Operations%20Dashboard.html))
 
 For an easy import in Databricks an archive (.dbc) with all the Notebooks is provided in the Notebooks folder.  
 
