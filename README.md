@@ -14,7 +14,7 @@ The Architecture includes standard AWS components for the video streaming side o
 
 ## QoS Notebooks
 
-[The Notebooks provided](https://andreiavramescu.github.io/testrepo/notebooks/html/index.html) are showcasing an end-to-end project using [Delta](https://delta.io/) and a Delta Architecture pattern :
+[The provided Notebooks](https://andreiavramescu.github.io/testrepo/notebooks/html/index.html) are showcasing an end-to-end project using [Delta](https://delta.io/) and a Delta Architecture pattern :
 - the data ingestion including a `make your data available to everyone pipeline` with real-time data enrichment and anonymisation    
 - real-time notifications based on a complex rules engine or machine learning based scoring 
 - real-time aggregations to update the web application
@@ -42,7 +42,7 @@ Deployment:
   
 4. As best practice, you should launch Databricks clusters with instance profiles that allow you to access your data from Databricks clusters without having to embed your AWS keys in notebooks. 
    
-   [Use the IAM role created and follow the steps 4,5,6 in the guideline to secure access using instance profiles:](https://docs.databricks.com/administration-guide/cloud-configurations/aws/instance-profiles.html) 
+   [Use the IAM role created in the previous step and follow the steps 4,5,6 in the guideline to secure access using instance profiles:](https://docs.databricks.com/administration-guide/cloud-configurations/aws/instance-profiles.html) 
     - Update the Databricks cross-account role with the new created IAM role that you can found the resource list mentioned above (the IAM role name includes Databricks)
     - Add the instance profile to the Databricks workspace
     - Start the cluster using the instance profile attached      
@@ -50,7 +50,6 @@ Deployment:
 5. Import the Databricks archive - [QoS Notebooks](notebooks/QoS.dbc) - in your environment and update the config notebook with resources created by the CloudFormation deployment.
       
 6. You are ready to go! Enjoy the QoS Solution!  
-
 
 ## License Summary
 

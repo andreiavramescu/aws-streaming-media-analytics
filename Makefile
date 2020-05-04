@@ -11,14 +11,14 @@ version = oss-databricks-v1
 # profile = rodeo
 profile = default
 
-# stack deployment
+# required if the sync of videos is done using the Makefile
+video_assets_bucket = aws-streaming-media-analytics-sourcecontent-us-east-1
+
+# required if the deployment is done using the cmd
+email_address  = 'emal@domain.com'
+stack_name = mediaqos
 deployment_region = us-west-2
 deployment_file = deployment.yaml
-# requied if sync of videos is done usin the make file
-video_assets_bucket = aws-streaming-media-analytics-sourcecontent-us-east-1
-email_address  = 'required if deployment is done using the cmd'
-# set Stack Name
-stack_name = mediaqos
 
 all: image build package creates3 copycodeww copytemplateww
 
